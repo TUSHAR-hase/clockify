@@ -25,8 +25,11 @@
 // export default uplodecloudnery;
 import imageCompression from 'browser-image-compression';
 
-const uplode_url = "dczul1z4n"
-const vita_uplode_preset = "clockify"
+const uplode_url = process.env.NEXT_PUBLIC_CLOUDINARY_NAME;
+const vita_uplode_preset = process.env.NEXT_PUBLIC_UPLOAD_PRESET;
+
+
+
 
 
 const uplodecloudnery = async (file, onProgress = null) => {

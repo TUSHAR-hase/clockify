@@ -1,16 +1,16 @@
-import mongoose from "mongoose";
 import { NextResponse } from "next/server";
-import { connectionstr } from "../../app/lib/db.js";
-import { User, Freelancer, TeamMember, Admin, Client } from "../../app/lib/userschema.js"; // adjust path as needed
+import connectDB from "../db/db.js";
+import { User, Freelancer, TeamMember, Admin, Client } from "../../models/userschema.js";
 import bcrypt from "bcrypt";
 
 export async function POST(req) {
   try {
     const data = await req.json();
     console.log(data);
-    await mongoose.connect(connectionstr, { useNewUrlParser: true });
 
-    // Prevent same email reuse
+    await connectDB(); 
+
+  
     const exists = await User.findOne({ email: data.email });
     if (exists) {
       return NextResponse.json({ success: false, message: "Email already registered." }, { status: 400 });
@@ -18,7 +18,7 @@ export async function POST(req) {
 
     const { role } = data;
 
-    // Hash password if present
+  
     if (data.password) {
       data.password = await bcrypt.hash(data.password, 10);
     }
@@ -42,7 +42,6 @@ export async function POST(req) {
     }
 
     const saved = await userDoc.save();
-    // Do not return hashed password
     const userInfo = saved.toObject();
     delete userInfo.password;
 

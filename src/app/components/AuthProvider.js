@@ -35,7 +35,7 @@ const router = useRouter();
         router.push("/pages/client");
         break;
       default:
-        router.push("/");
+        router.push("/pages/login");
     }
       } catch (error) {
         console.error('Error parsing stored user data:', error);
@@ -43,7 +43,7 @@ const router = useRouter();
       }
     }
     setLoading(false);
-  }, []);
+  }, [user]);
 
   // Login function
   const login = (userData) => {
