@@ -1,67 +1,19 @@
-const mongoose = require('mongoose');
-
-const baseOptions = {
-  discriminatorKey: 'role',
-  collection: 'users',
-  timestamps: true,
-};
+import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema({
-  name: { type: String },
+  name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  password: { type: String }, // Only required for freelancer/admin
-  profilePic: { type: String }, // store URL/path if uploaded
+  password: { type: String },
+  profilePic: { type: String },
   country: { type: String },
   timezone: { type: String },
-  workspace: { type: String }, // for freelancer/admin
-  industry: { type: String }, // for admin only
-  teamEmails: [{ type: String }], // for admin only
-  billableRate: { type: Number }, // for team member only
   role: {
     type: String,
-    enum: ['freelancer', 'client', 'team', 'admin'],
-    required: true,
+    enum: ["user", "admin"],
+    default: "user",
   },
-}, baseOptions);
+  workspaces: [{ type: mongoose.Schema.Types.ObjectId, ref: "Workspace" }],
+  invitations: [{ type: mongoose.Schema.Types.ObjectId, ref: "Invitation" }],
+}, { timestamps: true });
 
-const User = mongoose.models.User || mongoose.model("User", UserSchema);
-
-// Prevent duplicate discriminator creation
-const Freelancer = mongoose.models.freelancer || User.discriminator(
-  'freelancer',
-  new mongoose.Schema({}, { _id: false }) // empty schema
-);
-
-const TeamMember = mongoose.models.team || User.discriminator(
-  'team',
-  new mongoose.Schema({
-    roleType: {
-      type: String,
-      enum: ['User', 'Manager'],
-      default: 'User',
-    },
-    billableRate: { type: Number },
-  }, { _id: false })
-);
-
-const Admin = mongoose.models.admin || User.discriminator(
-  'admin',
-  new mongoose.Schema({
-    workspace: { type: String, required: true },
-    industry: { type: String },
-    teamEmails: [{ type: String }],
-    password: { type: String, required: true },
-  }, { _id: false })
-);
-
-const Client = mongoose.models.client || User.discriminator(
-  'client',
-  new mongoose.Schema({
-    clientName: { type: String, required: true },
-    clientEmail: { type: String, required: true },
-    clientCompany: { type: String },
-    clientNotes: { type: String },
-  }, { _id: false })
-);
-
-module.exports = { User, Freelancer, TeamMember, Admin, Client };
+export default mongoose.models.User || mongoose.model("User", UserSchema);

@@ -4,18 +4,12 @@ import uplodecloudnery from "../../util/uploadtocloud";
 import { useRouter } from "next/navigation";
 
 const roleDetails = {
-  freelancer: {
-    label: "Freelancer (Solo User)",
+  user: {
+    label: "User",
     required: [
       { name: "name", label: "Full Name", type: "text" },
       { name: "email", label: "Email", type: "email" },
       { name: "password", label: "Password", type: "password" },
-      {
-        name: "workspace",
-        label: "Workspace Name",
-        type: "text",
-        placeholder: "ex: My Freelance Work",
-      },
     ],
     optional: [
       { name: "country", label: "Country", type: "text" },
@@ -23,45 +17,9 @@ const roleDetails = {
       { name: "profilePic", label: "Profile Picture", type: "file" },
     ],
   },
-  client: {
-    label: "Client (External)",
-    required: [
-      { name: "clientName", label: "Client Name", type: "text" },
-      { name: "clientEmail", label: "Client Email", type: "email" },
-    ],
-    optional: [
-      { name: "clientCompany", label: "Client Company", type: "text" },
-      {
-        name: "clientNotes",
-        label: "Notes",
-        type: "text",
-        placeholder: "Billing address, contract ID",
-      },
-    ],
-  },
-  team: {
-    label: "Team Member (Collaborator)",
-    required: [
-      { name: "name", label: "Full Name", type: "text" },
-      { name: "email", label: "Email", type: "email" },
-    ],
-    optional: [
-      {
-        name: "role",
-        label: "Role",
-        type: "select",
-        options: ["User", "Manager"],
-      },
-      {
-        name: "billableRate",
-        label: "Billable Rate",
-        type: "number",
-        placeholder: "₹/hr",
-      },
-    ],
-  },
+
   admin: {
-    label: "Admin / Owner (Workspace Creator)",
+    label: "Admin (Workspace Owner)",
     required: [
       { name: "name", label: "Full Name", type: "text" },
       { name: "email", label: "Email", type: "email" },
@@ -69,18 +27,13 @@ const roleDetails = {
       { name: "workspace", label: "Workspace Name", type: "text" },
     ],
     optional: [
-      { name: "industry", label: "Industry Type", type: "text" },
-      {
-        name: "teamEmails",
-        label: "Team Members' Emails",
-        type: "text",
-        placeholder: "Comma separated",
-      },
+      { name: "industry", label: "Industry Type", type: "text" }
     ],
   },
 };
+
 export default function Register() {
-  const [selectedRole, setSelectedRole] = useState("freelancer");
+  const [selectedRole, setSelectedRole] = useState("user");
   const details = roleDetails[selectedRole];
   const [form, setForm] = useState({});
   const [success, setSuccess] = useState(false);
@@ -193,9 +146,8 @@ export default function Register() {
                   >
                     <span>{role.label}</span>
                     <div className="text-xs text-gray-600">
-                      {key === "freelancer" && "Track freelance times/projects"}
-                      {key === "client" && "Get reports/invoices for clients"}
-                      {key === "team" && "Collaborate on team projects"}
+                      {key === "user" && "Register as normal user"}
+                    
                       {key === "admin" && "Manage workspace, invite users"}
                     </div>
                   </button>
