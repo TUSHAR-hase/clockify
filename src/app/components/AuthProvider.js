@@ -43,7 +43,7 @@ const router = useRouter();
       }
     }
     setLoading(false);
-  }, [user]);
+  }, []);
 
   // Login function
   const login = (userData) => {

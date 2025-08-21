@@ -5,9 +5,9 @@ import { useRouter } from 'next/navigation';
 
 
 import Cookies from "js-cookie";
-import Navbar from '../../components/Header';
-import Sidebar from '../../components/Sidebar';
-import Footer from '../../components/Footer';
+import Navbar from '../../components/Navbar.js';
+import Sidebar from '../../components/Sidebar.js';
+import Footer from '../../components/Footer.js';
 
 
 function MyApp({ Component, pageProps }) {
