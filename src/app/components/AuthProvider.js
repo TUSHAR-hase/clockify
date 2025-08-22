@@ -28,12 +28,10 @@ const router = useRouter();
       case "admin":
         router.push("/pages/admin");
         break;
-      case "freelancer":
-        router.push("/pages/freelancer");
+      case "user":
+        router.push("/pages/user");
         break;
-      case "client":
-        router.push("/pages/client");
-        break;
+    
       default:
         router.push("/pages/login");
     }
@@ -53,10 +51,15 @@ const router = useRouter();
   };
 
   // Logout function
-  const logout = () => {
-    setUser(null);
-    setIsLoggedIn(false);
-    Cookies.remove('user');
+   const logout = async () => {
+    try {
+      await fetch("/api/logout", {
+        method: "POST",
+      });
+      setUser(null);
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
   };
 
   // Context value

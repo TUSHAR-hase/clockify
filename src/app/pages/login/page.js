@@ -42,20 +42,22 @@ const LoginPage = ({ onLogin }) => {
         });
         const userData = JSON.parse(Cookies.get("user"));
 
-        // Redirect based on role
-        switch (userData.role) {
-          case "admin":
-            router.push("/pages/admin");
-            break;
-          case "freelancer":
-            router.push("/pages/freelancer");
-            break;
-          case "client":
-            router.push("/pages/client");
-            break;
-          default:
-            router.push("/");
-        }
+       // Redirect based on role
+if (res.ok && data.success) {
+  login(data.user); // context update
+  switch (data.user.role) {
+    case "admin":
+      router.push("/pages/admin");
+      break;
+    case "user":
+      router.push("/pages/user");
+      break;
+    default:
+      router.push("/");
+  }
+}
+
+
       } else {
         setError(data.message || "Invalid email or password");
       }

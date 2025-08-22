@@ -1,9 +1,160 @@
-// src/components/DashboardCard.js
 'use client'
-import { useState, useEffect } from 'react'
-import React from 'react';
+import { useState ,useEffect} from 'react'
+import Head from 'next/head'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '../../components/AuthProvider'
 
-export default function DashboardContent({ toggleSidebar }) {
+
+function Sidebar({ isOpen, onClose }) {
+  const router = useRouter()
+  const [showAll, setShowAll] = useState(false)
+  const [activeItem, setActiveItem] = useState("Time Tracker")
+  
+  const menuItems = [
+    {
+      title: "TIME TRACKER",
+      items: [
+        { name: "Time Tracker", icon: "⏱️", path: "/time-tracker" },
+        { name: "Calendar", icon: "📅", path: "/calendar" },
+        { name: "Analyze", icon: "📊", path: "/analyze" },
+        { name: "workespace", icon: "📈", path: "/pages/workespace" },
+        { name: "Reports", icon: "📋", path: "/reports" }
+      ]
+    },
+    {
+      title: "MANAGE",
+      items: [
+        { name: "Projects", icon: "📂", path: "/projects" },
+        { name: "Team", icon: "👥", path: "/team" },
+        { name: "Clients", icon: "👔", path: "/clients" },
+        { name: "Tags", icon: "🏷️", path: "/tags" },
+        { name: "Timesheet", icon: "⏰", path: "/timesheet" },
+        { name: "Invoices", icon: "🧾", path: "/invoices" },
+        { name: "Expenses", icon: "💳", path: "/expenses" },
+        { name: "Settings", icon: "⚙️", path: "/settings" }
+      ]
+    }
+  ]
+
+  const itemsToShow = showAll 
+    ? menuItems 
+    : menuItems.map(section => ({
+        ...section,
+        items: section.items.slice(0, 3)
+      }))
+
+  const handleItemClick = (item) => {
+    setActiveItem(item.name)
+    router.push(item.path)
+    onClose()  // Close sidebar on mobile after navigation
+  }
+
+  return (
+    <>
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-gray-900 bg-opacity-50 z-20 lg:hidden"
+          onClick={onClose}
+        />
+      )}
+      
+      <aside className={`fixed inset-y-0 left-0 w-64 bg-white shadow-md transform transition-transform duration-300 ease-in-out z-30 lg:translate-x-0 lg:static lg:inset-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="flex items-center justify-between p-4 border-b">
+          <h1 className="text-xl font-bold text-blue-600">clockify</h1>
+          <button 
+            className="lg:hidden text-gray-500 p-1 rounded hover:bg-gray-100"
+            onClick={onClose}
+          >
+            ✕
+          </button>
+        </div>
+        
+        <nav className="p-4 h-[calc(100vh-4rem)] flex flex-col">
+          <div className="flex-1 overflow-y-auto">
+            {itemsToShow.map((section, index) => (
+              <div key={index} className="mb-6">
+                <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                  {section.title}
+                </h2>
+                <ul className="space-y-1">
+                  {section.items.map((item, itemIndex) => (
+                    <li 
+                      key={itemIndex} 
+                      className={`flex items-center py-2 px-3 rounded-md cursor-pointer transition-colors ${activeItem === item.name ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-100'}`}
+                      onClick={() => handleItemClick(item)}
+                    >
+                      <span className="mr-3 text-lg">{item.icon}</span>
+                      <span className="text-sm">{item.name}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+          
+          <div className="pt-4 border-t border-gray-200">
+            <button 
+              className="flex items-center justify-center w-full text-gray-500 text-sm py-2 hover:bg-gray-100 rounded-md transition-colors"
+              onClick={() => setShowAll(!showAll)}
+            >
+              <span className="mr-1">{showAll ? '↑' : '↓'}</span> 
+              SHOW {showAll ? 'LESS' : 'MORE'}
+            </button>
+          </div>
+        </nav>
+      </aside>
+    </>
+  )
+}
+
+
+
+
+// Updated Dashboard Component
+function Dashboard() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const { user, logout } = useAuth();
+  const router = useRouter();
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen)
+  }
+  const handleLogout = async () => {
+    await logout();
+    router.push("/pages/login"); // login page pe bhej dena
+  };
+  const closeSidebar = () => {
+    setIsSidebarOpen(false)
+  }
+
+  return (
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
+      <Head>
+        
+        <title>Clockify Dashboard</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+
+      {/* Sidebar */}
+      <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
+
+      {/* Overlay for mobile when sidebar is open */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
+          onClick={closeSidebar}
+        ></div>
+      )}
+
+      {/* Main content */}
+      <div className="flex-1 flex flex-col overflow-hidden lg:ml-0">
+        <DashboardContent toggleSidebar={toggleSidebar} />
+      </div>
+    </div>
+  )
+}
+
+// DashboardContent Component (unchanged from your original)
+function DashboardContent({ toggleSidebar }) {
   const [time, setTime] = useState(0)
   const [isRunning, setIsRunning] = useState(false)
   const [activeProject, setActiveProject] = useState('')
@@ -113,11 +264,15 @@ export default function DashboardContent({ toggleSidebar }) {
     { action: "completed a task", project: "Mobile App", time: "5 hours ago", user: "Sarah Parker" },
     { action: "uploaded a file", project: "Marketing Campaign", time: "Yesterday", user: "Mike Kim" }
   ]
-
+const { user, logout } = useAuth();
+  const router = useRouter();  const handleLogout = async () => {
+    await logout();
+    router.push("/pages/login"); // login page pe bhej dena
+  };
   return (
-    <main className="flex-1 lg:ml-64">
+    <main className="flex-1 overflow-y-auto">
       {/* Top bar */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center">
             <button 
@@ -130,6 +285,13 @@ export default function DashboardContent({ toggleSidebar }) {
             </button>
             <h2 className="text-xl font-semibold text-gray-800">Dashboard</h2>
           </div>
+            
+      <button
+        onClick={handleLogout}
+        className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg"
+      >
+        Logout
+      </button>
           <div className="flex items-center space-x-4">
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -160,7 +322,7 @@ export default function DashboardContent({ toggleSidebar }) {
       </header>
 
       {/* Content */}
-      <div className="p-6 bg-gray-50 min-h-screen">
+      <div className="p-6 bg-gray-50">
         {/* Welcome section */}
         <div className="mb-8">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Welcome back, John!</h1>
@@ -389,3 +551,5 @@ export default function DashboardContent({ toggleSidebar }) {
     </main>
   )
 }
+
+export default Dashboard
