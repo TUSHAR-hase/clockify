@@ -13,14 +13,20 @@ import {
   FaDownload,
   FaFilter,
   FaCalendarAlt,
+  FaPlay,
+  FaPause,
+  FaStop,
+  FaCamera,
+  FaExclamationTriangle,
 } from "react-icons/fa";
-import { FiTrendingUp, FiTrendingDown, FiActivity } from "react-icons/fi";
+import { FiTrendingUp, FiTrendingDown, FiActivity, FiAlertCircle } from "react-icons/fi";
 
 export default function AnalyzePage() {
   const [selectedPeriod, setSelectedPeriod] = useState("week");
   const [selectedMetric, setSelectedMetric] = useState("productivity");
+  const [selectedScreenshot, setSelectedScreenshot] = useState(null);
 
-  // Sample analytics data
+  // Sample analytics data for time tracking app
   const productivityData = {
     current: 87,
     previous: 82,
@@ -33,33 +39,95 @@ export default function AnalyzePage() {
     activeHours: 38.2,
     idleTime: 4.3,
     breakTime: 2.1,
+    overtimeHours: 3.2,
   };
 
   const activityData = [
-    { day: "Mon", active: 8.5, idle: 1.2, breaks: 0.3 },
-    { day: "Tue", active: 7.8, idle: 1.8, breaks: 0.4 },
-    { day: "Wed", active: 9.2, idle: 0.8, breaks: 0.2 },
-    { day: "Thu", active: 8.1, idle: 1.5, breaks: 0.4 },
-    { day: "Fri", active: 7.6, idle: 2.0, breaks: 0.4 },
-    { day: "Sat", active: 4.2, idle: 0.8, breaks: 0.2 },
-    { day: "Sun", active: 2.8, idle: 0.4, breaks: 0.1 },
+    { day: "Mon", active: 8.5, idle: 1.2, breaks: 0.3, overtime: 0.5 },
+    { day: "Tue", active: 7.8, idle: 1.8, breaks: 0.4, overtime: 0.2 },
+    { day: "Wed", active: 9.2, idle: 0.8, breaks: 0.2, overtime: 1.1 },
+    { day: "Thu", active: 8.1, idle: 1.5, breaks: 0.4, overtime: 0.3 },
+    { day: "Fri", active: 7.6, idle: 2.0, breaks: 0.4, overtime: 0.8 },
+    { day: "Sat", active: 4.2, idle: 0.8, breaks: 0.2, overtime: 0.0 },
+    { day: "Sun", active: 2.8, idle: 0.4, breaks: 0.1, overtime: 0.0 },
   ];
 
   const applicationUsage = [
-    { name: "VS Code", time: "12.5h", percentage: 35, color: "bg-blue-500" },
-    { name: "Chrome", time: "8.2h", percentage: 23, color: "bg-green-500" },
-    { name: "Figma", time: "6.1h", percentage: 17, color: "bg-purple-500" },
-    { name: "Slack", time: "4.3h", percentage: 12, color: "bg-red-500" },
-    { name: "Others", time: "4.6h", percentage: 13, color: "bg-gray-400" },
+    { name: "VS Code", time: "12.5h", percentage: 35, color: "bg-blue-500", category: "Development" },
+    { name: "Chrome", time: "8.2h", percentage: 23, color: "bg-green-500", category: "Browser" },
+    { name: "Figma", time: "6.1h", percentage: 17, color: "bg-purple-500", category: "Design" },
+    { name: "Slack", time: "4.3h", percentage: 12, color: "bg-red-500", category: "Communication" },
+    { name: "Zoom", time: "2.8h", percentage: 8, color: "bg-yellow-500", category: "Meetings" },
+    { name: "Others", time: "1.8h", percentage: 5, color: "bg-gray-400", category: "Miscellaneous" },
   ];
 
   const screenshots = [
-    { id: 1, time: "09:15 AM", activity: "High", thumbnail: "/api/placeholder/150/100" },
-    { id: 2, time: "10:30 AM", activity: "Medium", thumbnail: "/api/placeholder/150/100" },
-    { id: 3, time: "11:45 AM", activity: "High", thumbnail: "/api/placeholder/150/100" },
-    { id: 4, time: "02:15 PM", activity: "Low", thumbnail: "/api/placeholder/150/100" },
-    { id: 5, time: "03:30 PM", activity: "High", thumbnail: "/api/placeholder/150/100" },
-    { id: 6, time: "04:45 PM", activity: "Medium", thumbnail: "/api/placeholder/150/100" },
+    { 
+      id: 1, 
+      time: "09:15 AM", 
+      activity: "High", 
+      thumbnail: "/api/placeholder/150/100",
+      project: "Website Redesign",
+      application: "VS Code",
+      mouseClicks: 45,
+      keystrokes: 234
+    },
+    { 
+      id: 2, 
+      time: "10:30 AM", 
+      activity: "Medium", 
+      thumbnail: "/api/placeholder/150/100",
+      project: "Mobile App",
+      application: "Figma",
+      mouseClicks: 23,
+      keystrokes: 89
+    },
+    { 
+      id: 3, 
+      time: "11:45 AM", 
+      activity: "High", 
+      thumbnail: "/api/placeholder/150/100",
+      project: "Website Redesign",
+      application: "Chrome",
+      mouseClicks: 67,
+      keystrokes: 445
+    },
+    { 
+      id: 4, 
+      time: "02:15 PM", 
+      activity: "Low", 
+      thumbnail: "/api/placeholder/150/100",
+      project: "Documentation",
+      application: "Notion",
+      mouseClicks: 12,
+      keystrokes: 156
+    },
+    { 
+      id: 5, 
+      time: "03:30 PM", 
+      activity: "High", 
+      thumbnail: "/api/placeholder/150/100",
+      project: "API Development",
+      application: "Postman",
+      mouseClicks: 89,
+      keystrokes: 567
+    },
+    { 
+      id: 6, 
+      time: "04:45 PM", 
+      activity: "Medium", 
+      thumbnail: "/api/placeholder/150/100",
+      project: "Team Meeting",
+      application: "Zoom",
+      mouseClicks: 34,
+      keystrokes: 78
+    },
+  ];
+
+  const inactivityAlerts = [
+    { time: "11:30 AM", duration: "18 minutes", reason: "Extended break" },
+    { time: "02:45 PM", duration: "12 minutes", reason: "Away from desk" },
+    { time: "04:15 PM", duration: "25 minutes", reason: "Meeting overrun" },
   ];
 
   const getActivityColor = (activity) => {
@@ -78,9 +146,9 @@ export default function AnalyzePage() {
         <div className="mb-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Analytics</h1>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Work Analytics & Monitoring</h1>
               <p className="text-gray-600">
-                Track productivity, activity patterns, and work insights
+                Track productivity, activity patterns, and work insights for remote employees
               </p>
             </div>
             <div className="flex items-center space-x-4 mt-4 md:mt-0">
@@ -108,7 +176,7 @@ export default function AnalyzePage() {
         </div>
 
         {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
           <motion.div
             whileHover={{ scale: 1.02 }}
             className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
@@ -191,7 +259,27 @@ export default function AnalyzePage() {
                 </p>
               </div>
               <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                <FaDesktop className="w-6 h-6 text-purple-600" />
+                <FaCamera className="w-6 h-6 text-purple-600" />
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Overtime</p>
+                <p className="text-2xl font-bold text-gray-900 mt-1">
+                  {timeData.overtimeHours}h
+                </p>
+                <p className="text-sm text-red-500 mt-2">
+                  Above 8h/day
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+                <FaExclamationTriangle className="w-6 h-6 text-red-600" />
               </div>
             </div>
           </motion.div>
@@ -217,6 +305,10 @@ export default function AnalyzePage() {
                   <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
                   <span className="text-sm text-gray-600">Breaks</span>
                 </div>
+                <div className="flex items-center">
+                  <div className="w-3 h-3 bg-orange-500 rounded-full mr-2"></div>
+                  <span className="text-sm text-gray-600">Overtime</span>
+                </div>
               </div>
             </div>
             <div className="h-64 flex items-end justify-between space-x-2">
@@ -232,8 +324,12 @@ export default function AnalyzePage() {
                       style={{ height: `${(day.idle / 10) * 100}%` }}
                     ></div>
                     <div
-                      className="bg-yellow-500 rounded-b"
+                      className="bg-yellow-500"
                       style={{ height: `${(day.breaks / 10) * 100}%` }}
+                    ></div>
+                    <div
+                      className="bg-orange-500 rounded-b"
+                      style={{ height: `${(day.overtime / 10) * 100}%` }}
                     ></div>
                   </div>
                   <span className="text-sm text-gray-600 mt-2">{day.day}</span>
@@ -254,9 +350,14 @@ export default function AnalyzePage() {
                     <div className={`w-3 h-3 rounded-full ${app.color} mr-3`}></div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm font-medium text-gray-900">
-                          {app.name}
-                        </span>
+                        <div>
+                          <span className="text-sm font-medium text-gray-900">
+                            {app.name}
+                          </span>
+                          <span className="text-xs text-gray-500 block">
+                            {app.category}
+                          </span>
+                        </div>
                         <span className="text-sm text-gray-600">{app.time}</span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
@@ -273,19 +374,46 @@ export default function AnalyzePage() {
           </div>
         </div>
 
+        {/* Inactivity Alerts */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+              <FiAlertCircle className="w-5 h-5 text-orange-500 mr-2" />
+              Inactivity Alerts
+            </h3>
+            <span className="text-sm text-gray-500">
+              Periods longer than 15 minutes
+            </span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {inactivityAlerts.map((alert, index) => (
+              <div key={index} className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-orange-900">{alert.time}</p>
+                    <p className="text-sm text-orange-700">{alert.duration}</p>
+                    <p className="text-xs text-orange-600 mt-1">{alert.reason}</p>
+                  </div>
+                  <FaExclamationTriangle className="w-5 h-5 text-orange-500" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Screenshots Section */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-gray-900">
-              Recent Screenshots
+              Activity Screenshots
             </h3>
             <div className="flex items-center space-x-4">
               <button className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
                 <FaFilter className="w-4 h-4 mr-2" />
-                Filter
+                Filter by Activity
               </button>
               <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
-                View All
+                View All Screenshots
               </button>
             </div>
           </div>
@@ -295,6 +423,7 @@ export default function AnalyzePage() {
                 key={screenshot.id}
                 whileHover={{ scale: 1.05 }}
                 className="relative group cursor-pointer"
+                onClick={() => setSelectedScreenshot(screenshot)}
               >
                 <div className="aspect-video bg-gray-200 rounded-lg overflow-hidden">
                   <div className="w-full h-full bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
@@ -310,6 +439,12 @@ export default function AnalyzePage() {
                       {screenshot.activity}
                     </span>
                   </div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    {screenshot.project}
+                  </div>
+                  <div className="text-xs text-blue-600 mt-1">
+                    {screenshot.application}
+                  </div>
                 </div>
                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 rounded-lg flex items-center justify-center">
                   <FaEye className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
@@ -318,6 +453,77 @@ export default function AnalyzePage() {
             ))}
           </div>
         </div>
+
+        {/* Screenshot Detail Modal */}
+        {selectedScreenshot && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">Screenshot Details</h3>
+                <button
+                  onClick={() => setSelectedScreenshot(null)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  ✕
+                </button>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="aspect-video bg-gray-200 rounded-lg overflow-hidden">
+                  <div className="w-full h-full bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
+                    <FaDesktop className="w-16 h-16 text-gray-400" />
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-medium text-gray-900">Time Captured</h4>
+                    <p className="text-sm text-gray-600">{selectedScreenshot.time}</p>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-medium text-gray-900">Project</h4>
+                    <p className="text-sm text-blue-600">{selectedScreenshot.project}</p>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-medium text-gray-900">Application</h4>
+                    <p className="text-sm text-gray-600">{selectedScreenshot.application}</p>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-medium text-gray-900">Activity Level</h4>
+                    <span className={`text-sm px-2 py-1 rounded-full ${getActivityColor(selectedScreenshot.activity)}`}>
+                      {selectedScreenshot.activity}
+                    </span>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <h4 className="font-medium text-gray-900 flex items-center">
+                        <FaMouse className="w-4 h-4 mr-1" />
+                        Mouse Clicks
+                      </h4>
+                      <p className="text-sm text-gray-600">{selectedScreenshot.mouseClicks}</p>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-medium text-gray-900 flex items-center">
+                        <FaKeyboard className="w-4 h-4 mr-1" />
+                        Keystrokes
+                      </h4>
+                      <p className="text-sm text-gray-600">{selectedScreenshot.keystrokes}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
       </div>
     </div>
   );

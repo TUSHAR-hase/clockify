@@ -29,10 +29,11 @@ export default function Sidebar({ isOpen, onClose }) {
       title: "TIME TRACKER",
       items: [
         { name: "Time Tracker", icon: <FaStopwatch />, path: "/time-tracker" },
-        { name: "Calendar", icon: <FaCalendarAlt />, path: "/calendar" },
+        { name: "Calendar", icon: <FaCalendarAlt />, path: "/pages/calendar" },
         { name: "Analyze", icon: <FaReact className="text-blue-500" />, path: "/analyze" },
-        { name: "Workspace", icon: <FaChartBar />, path: "/pages/workespace" },
-        { name: "Reports", icon: <FaChartBar />, path: "/reports" },
+        { name: "Analyze", icon: <FaChartBar />, path: "/pages/analyze" },
+        { name: "Workspace", icon: <FaProjectDiagram />, path: "/pages/workespace" },
+        { name: "Reports", icon: <FaFileInvoice />, path: "/pages/reports" },
       ],
     },
     {
