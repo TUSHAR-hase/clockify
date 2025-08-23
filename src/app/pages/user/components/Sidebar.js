@@ -73,7 +73,7 @@ export default function Sidebar({ isOpen, onClose }) {
         <div className="flex items-center gap-2">
           <FaReact className="text-blue-500 text-2xl" />
           {!collapsed && <h1 className="text-xl font-bold text-blue-600">Clockify</h1>}
-          }
+          
         </div>
 
         {/* Collapse / Expand Button */}
