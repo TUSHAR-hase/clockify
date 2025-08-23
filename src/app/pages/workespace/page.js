@@ -1,6 +1,21 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import {
+  FaPlus,
+  FaUsers,
+  FaProjectDiagram,
+  FaClock,
+  FaChartBar,
+  FaEdit,
+  FaTrash,
+  FaCog,
+  FaUserPlus,
+  FaCalendarAlt,
+  FaTasks,
+} from "react-icons/fa";
+import { FiSearch, FiMoreVertical, FiActivity } from "react-icons/fi";
 import DeleteConfirmModal from "../../components/ConfrimToDelete.js";
 
 export default function WorkspacesPage() {
@@ -112,10 +127,30 @@ export default function WorkspacesPage() {
     }
   };
 
+  // Sample workspace data with enhanced details
+  const enhancedWorkspaces = workspaces.map(ws => ({
+    ...ws,
+    stats: {
+      totalProjects: Math.floor(Math.random() * 10) + 1,
+      activeMembers: Math.floor(Math.random() * 15) + 1,
+      hoursThisWeek: Math.floor(Math.random() * 100) + 20,
+      completedTasks: Math.floor(Math.random() * 50) + 10,
+    },
+    recentActivity: [
+      { user: "John Doe", action: "completed task", time: "2 hours ago" },
+      { user: "Sarah Parker", action: "started project", time: "4 hours ago" },
+      { user: "Mike Kim", action: "joined workspace", time: "1 day ago" },
+    ]
+  }));
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"
+        />
       </div>
     );
   }
@@ -124,155 +159,380 @@ export default function WorkspacesPage() {
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Workspaces</h1>
-          <p className="text-gray-600">
-            Create and manage your workspaces to organize your projects
-          </p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Workspace Management</h1>
+          <p className="text-gray-600">Create and manage workspaces to organize remote teams and track productivity</p>
+        </div>
+
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Workspaces</p>
+                <p className="text-2xl font-bold text-gray-900 mt-1">{workspaces.length}</p>
+              </div>
+              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                <FaProjectDiagram className="w-6 h-6 text-blue-600" />
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Active Members</p>
+                <p className="text-2xl font-bold text-gray-900 mt-1">
+                  {enhancedWorkspaces.reduce((acc, ws) => acc + ws.stats.activeMembers, 0)}
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                <FaUsers className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Hours This Week</p>
+                <p className="text-2xl font-bold text-gray-900 mt-1">
+                  {enhancedWorkspaces.reduce((acc, ws) => acc + ws.stats.hoursThisWeek, 0)}h
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                <FaClock className="w-6 h-6 text-purple-600" />
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Completed Tasks</p>
+                <p className="text-2xl font-bold text-gray-900 mt-1">
+                  {enhancedWorkspaces.reduce((acc, ws) => acc + ws.stats.completedTasks, 0)}
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                <FaTasks className="w-6 h-6 text-orange-600" />
+              </div>
+            </div>
+          </motion.div>
         </div>
 
         {/* Success and Error Messages */}
         {success && (
-          <div className="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
-            {success}
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg"
+          >
+            <div className="flex items-center">
+              <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              {success}
+            </div>
+          </motion.div>
         )}
         {error && (
-          <div className="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-            {error}
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg"
+          >
+            <div className="flex items-center">
+              <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+              {error}
+            </div>
+          </motion.div>
         )}
 
         {/* Create Workspace Form */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">
-            Create New Workspace
-          </h2>
-          <form
-            onSubmit={createWorkspace}
-            className="flex flex-col sm:flex-row gap-4"
-          >
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-800 flex items-center">
+              <FaPlus className="w-5 h-5 mr-2 text-blue-600" />
+              Create New Workspace
+            </h2>
+          </div>
+          <form onSubmit={createWorkspace} className="space-y-4">
             <div className="flex-grow">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Workspace Name
+              </label>
               <input
                 type="text"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Enter workspace name"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                onChange={e => setName(e.target.value)}
+                placeholder="e.g., Marketing Team, Development Squad"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
               />
             </div>
-            <button
-              type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors shadow-sm hover:shadow-md whitespace-nowrap"
-            >
-              Create Workspace
-            </button>
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors shadow-sm hover:shadow-md flex items-center"
+              >
+                <FaPlus className="w-4 h-4 mr-2" />
+                Create Workspace
+              </button>
+            </div>
           </form>
         </div>
 
         {/* Workspaces List */}
-        {workspaces.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {workspaces.map((ws) => (
-              <div
+        {enhancedWorkspaces.length > 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {enhancedWorkspaces.map(ws => (
+              <motion.div
                 key={ws._id}
-                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+                whileHover={{ scale: 1.02 }}
+                className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-all"
               >
                 <div className="p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-lg font-semibold text-gray-800 truncate">
-                      {ws.name}
-                    </h3>
-                    <button
-                      onClick={() => handleOpenModal(ws)}
-                      className="text-gray-400 hover:text-red-500 transition-colors"
-                      aria-label="Delete workspace"
-                    >
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
+                  <div className="flex justify-between items-start mb-6">
+                    <div>
+                      <h3 className="text-xl font-semibold text-gray-900 mb-2">{ws.name}</h3>
+                      <div className="flex items-center text-sm text-gray-500">
+                        <FaCalendarAlt className="w-4 h-4 mr-1" />
+                        <span>Created {new Date(ws.createdAt).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => setSelectedWorkspace(ws)}
+                        className="text-gray-400 hover:text-blue-500 transition-colors p-1"
+                        aria-label="Workspace settings"
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                        />
-                      </svg>
+                        <FaCog className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleOpenModal(ws)}
+                        className="text-gray-400 hover:text-red-500 transition-colors p-1"
+                        aria-label="Delete workspace"
+                      >
+                        <FaTrash className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Workspace Stats */}
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div className="bg-blue-50 rounded-lg p-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-blue-900">{ws.stats.totalProjects}</p>
+                          <p className="text-xs text-blue-600">Projects</p>
+                        </div>
+                        <FaProjectDiagram className="w-5 h-5 text-blue-500" />
+                      </div>
+                    </div>
+                    <div className="bg-green-50 rounded-lg p-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-green-900">{ws.stats.activeMembers}</p>
+                          <p className="text-xs text-green-600">Members</p>
+                        </div>
+                        <FaUsers className="w-5 h-5 text-green-500" />
+                      </div>
+                    </div>
+                    <div className="bg-purple-50 rounded-lg p-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-purple-900">{ws.stats.hoursThisWeek}h</p>
+                          <p className="text-xs text-purple-600">This Week</p>
+                        </div>
+                        <FaClock className="w-5 h-5 text-purple-500" />
+                      </div>
+                    </div>
+                    <div className="bg-orange-50 rounded-lg p-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-orange-900">{ws.stats.completedTasks}</p>
+                          <p className="text-xs text-orange-600">Tasks Done</p>
+                        </div>
+                        <FaTasks className="w-5 h-5 text-orange-500" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Recent Activity */}
+                  <div className="mb-4">
+                    <h4 className="text-sm font-medium text-gray-900 mb-2 flex items-center">
+                      <FiActivity className="w-4 h-4 mr-1" />
+                      Recent Activity
+                    </h4>
+                    <div className="space-y-2">
+                      {ws.recentActivity.slice(0, 2).map((activity, index) => (
+                        <div key={index} className="text-xs text-gray-600">
+                          <span className="font-medium">{activity.user}</span> {activity.action}
+                          <span className="text-gray-400 ml-1">• {activity.time}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
+                  <div className="flex items-center justify-between">
+                    <button 
+                      onClick={() => router.push(`/pages/workespace/${ws._id}/manage`)}
+                      className="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors flex items-center"
+                    >
+                      <FaCog className="w-4 h-4 mr-1" />
+                      Manage Workspace
+                    </button>
+                    <button className="text-green-600 hover:text-green-800 text-sm font-medium transition-colors flex items-center">
+                      <FaUserPlus className="w-4 h-4 mr-1" />
+                      Invite Members
                     </button>
                   </div>
-                  <div className="flex items-center text-sm text-gray-500 mb-2">
-                    <svg
-                      className="w-4 h-4 mr-1"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                      />
-                    </svg>
-                    <span>Owner: You</span>
-                  </div>
-                  <div className="flex items-center text-sm text-gray-500">
-                    <svg
-                      className="w-4 h-4 mr-1"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                      />
-                    </svg>
-                    <span>{ws.members?.length || 0} members</span>
-                  </div>
                 </div>
-                <div className="bg-gray-50 px-6 py-3 border-t border-gray-200">
-                  <button
-                    onClick={() => router.push(`/pages/workespace/${ws._id}/manage`)}
-                    className="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
-                  >
-                    Manage Workspace
-                  </button>
-                </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow-md p-8 text-center">
-            <svg
-              className="w-16 h-16 text-gray-300 mx-auto mb-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center"
+          >
+            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <FaProjectDiagram className="w-10 h-10 text-gray-400" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">No workspaces yet</h3>
+            <p className="text-gray-500 mb-6">Create your first workspace to start organizing your remote team and tracking productivity</p>
+            <button
+              onClick={() => document.querySelector('input[type="text"]').focus()}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors flex items-center mx-auto"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-              />
-            </svg>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No workspaces yet
-            </h3>
-            <p className="text-gray-500">
-              Create your first workspace to get started
-            </p>
+              <FaPlus className="w-4 h-4 mr-2" />
+              Create Your First Workspace
+            </button>
+          </motion.div>
+        )}
+
+        {/* Workspace Detail Modal */}
+        {selectedWorkspace && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-semibold text-gray-900">Workspace Settings</h3>
+                <button
+                  onClick={() => setSelectedWorkspace(null)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  ✕
+                </button>
+              </div>
+              
+              <div className="space-y-6">
+                <div>
+                  <h4 className="font-medium text-gray-900 mb-2">Workspace Name</h4>
+                  <input
+                    type="text"
+                    value={selectedWorkspace.name}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  />
+                </div>
+                
+                <div>
+                  <h4 className="font-medium text-gray-900 mb-4">Workspace Statistics</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-2xl font-bold text-gray-900">{selectedWorkspace.stats.totalProjects}</p>
+                          <p className="text-sm text-gray-600">Total Projects</p>
+                        </div>
+                        <FaProjectDiagram className="w-8 h-8 text-blue-500" />
+                      </div>
+                    </div>
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-2xl font-bold text-gray-900">{selectedWorkspace.stats.activeMembers}</p>
+                          <p className="text-sm text-gray-600">Active Members</p>
+                        </div>
+                        <FaUsers className="w-8 h-8 text-green-500" />
+                      </div>
+                    </div>
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-2xl font-bold text-gray-900">{selectedWorkspace.stats.hoursThisWeek}h</p>
+                          <p className="text-sm text-gray-600">Hours This Week</p>
+                        </div>
+                        <FaClock className="w-8 h-8 text-purple-500" />
+                      </div>
+                    </div>
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-2xl font-bold text-gray-900">{selectedWorkspace.stats.completedTasks}</p>
+                          <p className="text-sm text-gray-600">Completed Tasks</p>
+                        </div>
+                        <FaTasks className="w-8 h-8 text-orange-500" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <h4 className="font-medium text-gray-900 mb-4">Recent Activity</h4>
+                  <div className="space-y-3">
+                    {selectedWorkspace.recentActivity.map((activity, index) => (
+                      <div key={index} className="flex items-center p-3 bg-gray-50 rounded-lg">
+                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                          <span className="text-xs font-medium text-blue-600">
+                            {activity.user.split(' ').map(n => n[0]).join('')}
+                          </span>
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm text-gray-900">
+                            <span className="font-medium">{activity.user}</span> {activity.action}
+                          </p>
+                          <p className="text-xs text-gray-500">{activity.time}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex space-x-3 mt-8">
+                <button className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center">
+                  <FaEdit className="w-4 h-4 mr-2" />
+                  Save Changes
+                </button>
+                <button className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center">
+                  <FaUserPlus className="w-4 h-4 mr-2" />
+                  Invite Members
+                </button>
+              </div>
+            </motion.div>
           </div>
         )}
+
         {/* Delete Confirmation Modal */}
         <DeleteConfirmModal
           isOpen={isModalOpen}
