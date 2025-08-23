@@ -1,22 +1,25 @@
 // src/app/api/workspaces/route.js
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import connectDB from "../db/db";
-import Workspace from "../../models/workspace";
+import connectDB from "../db/db.js";
+import Workspace from "../../models/workspace.js";
+import User from "../../models/userschema.js";
 
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret"; // apne env me rakho
 
 // Helper: check auth from cookies
 async function getUserFromCookie(req) {
   const token = req.cookies.get("token")?.value;
- console.log("TOKEN FROM COOKIE ===>", token); 
+  console.log("TOKEN FROM COOKIE ===>", token);
+
   if (!token) return null;
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    console.log("", decoded);
+
     return decoded; // user info
   } catch (err) {
+    console.log("FETCH JWT TOKEN ERROR!!!!");
     return null;
   }
 }
@@ -25,6 +28,7 @@ async function getUserFromCookie(req) {
 export async function POST(req) {
   try {
     const user = await getUserFromCookie(req);
+    console.log("User--->", user);
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
@@ -65,6 +69,7 @@ export async function POST(req) {
 export async function GET(req) {
   try {
     const user = await getUserFromCookie(req);
+
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
@@ -88,5 +93,28 @@ export async function GET(req) {
       { success: false, error: "Internal server error" },
       { status: 500 }
     );
+  }
+}
+
+
+export async function DELETE(req) {
+  try {
+    await connectDB();
+    const { _id } = await req.json();
+
+    if (!_id) {
+      return new Response(JSON.stringify({ message: "Workspace ID is required" }), { status: 400 });
+    }
+
+    const workspace = await Workspace.findById(_id);
+    if (!workspace) {
+      return new Response(JSON.stringify({ message: "Workspace not found" }), { status: 404 });
+    }
+
+    await Workspace.findByIdAndDelete(_id);
+    return new Response(JSON.stringify({ message: "Workspace deleted successfully" }), { status: 200 });
+  } catch (err) {
+
+    return new Response(JSON.stringify({ message: "Failed to delete workspace" }), { status: 500 });
   }
 }
