@@ -23,7 +23,8 @@ export async function GET(req, { params }) {
   }
 
   try {
-    const workspace = await Workspace.findById(id);
+    const workspace = await Workspace.findById(id).populate("members","name email");
+    console.log(workspace)
 
     if (!workspace) {
       return NextResponse.json(

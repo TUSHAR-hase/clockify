@@ -13,7 +13,7 @@ const UserSchema = new mongoose.Schema({
     default: "user",
   },
   workspaces: [{ type: mongoose.Schema.Types.ObjectId, ref: "Workspace" }],
-  invitations: [{ type: mongoose.Schema.Types.ObjectId, ref: "Invitation" }],
+  invitations: [{ type: mongoose.Schema.Types.ObjectId, ref: "Invite" }],
 }, { timestamps: true });
 
 export default mongoose.models.User || mongoose.model("User", UserSchema);

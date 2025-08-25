@@ -17,6 +17,7 @@ import {
   FaCog,
 } from "react-icons/fa";
 import { FiMenu, FiX } from "react-icons/fi";
+import ReportsPage from "../reports/page.js"
 
 export default function Sidebar({ isOpen, onClose }) {
   const router = useRouter();
@@ -28,12 +29,11 @@ export default function Sidebar({ isOpen, onClose }) {
     {
       title: "TIME TRACKER",
       items: [
-        { name: "Time Tracker", icon: <FaStopwatch />, path: "/time-tracker" },
-        { name: "Calendar", icon: <FaCalendarAlt />, path: "/pages/calendar" },
-        { name: "Analyze", icon: <FaReact className="text-blue-500" />, path: "/analyze" },
-        { name: "Analyze", icon: <FaChartBar />, path: "/pages/analyze" },
+        { name: "Time Tracker", icon: <FaStopwatch />, path: "/time-tracker",active:true},
+        { name: "Calendar", icon: <FaCalendarAlt />, path: "/pages/user/calendar" },
+        { name: "Analyze", icon: <FaChartBar />, path: "/pages/user/analyze" },
         { name: "Workspace", icon: <FaProjectDiagram />, path: "/pages/workespace" },
-        { name: "Reports", icon: <FaFileInvoice />, path: "/pages/reports" },
+        { name: "Reports", icon: <FaFileInvoice />, path: "/pages/user/reports" },
       ],
     },
     {
